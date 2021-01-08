@@ -1,5 +1,5 @@
-console.log("Start project");
-
+const os = require('os');
+var util = require('util');
 
 
 /****************************/
@@ -10,12 +10,12 @@ function commandList(command) {
 		"author" : "Kirill Bukovski",
 		"version" : "v1.0.0",
 		"fill" : "fill db data",
-		"info" : {
-			"Platform": "linux",
-			"Architecture": "x64",
-			"CPU": "cpu model",
-			"Free memory": "3.4GB"
-		},
+		"info" : util.format("%O", {
+			"Platform": process.platform,
+			"Architecture": process.arch,
+			"CPU": os.cpus()[ 0 ].model,
+			"Free memory": os.freemem()
+		}),
 		"dir" : `Full path to file: ${ __filename }`
 	}
 	
