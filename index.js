@@ -2,6 +2,16 @@ const os = require('os');
 var util = require('util');
 
 
+function bytesToSize(bytes) {
+	if (bytes === 0) return 'n/a'
+	
+	const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+	const splitBytesIntoDots = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+	if (splitBytesIntoDots === 0) return `${ bytes } ${ sizes[ splitBytesIntoDots ] })`;
+	
+	return `${ (bytes / (1024 ** splitBytesIntoDots)).toFixed(1) } ${ sizes[ splitBytesIntoDots ] }`;
+}
+
 /****************************/
 
 function commandList(command) {
@@ -14,7 +24,7 @@ function commandList(command) {
 			"Platform": process.platform,
 			"Architecture": process.arch,
 			"CPU": os.cpus()[ 0 ].model,
-			"Free memory": os.freemem()
+			"Free memory": bytesToSize(os.freemem())
 		}),
 		"dir" : `Full path to file: ${ __filename }`
 	}
