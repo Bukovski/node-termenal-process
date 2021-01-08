@@ -1,6 +1,26 @@
-const os = require('os');
-var util = require('util');
+const faker = require('faker');
 
+const os = require('os');
+const util = require('util');
+
+
+/****************************/
+
+function randomPersonList(count) {
+	const person = () => ({
+		name: faker.name.findName(),
+		email: faker.internet.email(),
+		text: faker.lorem.text(1),
+	})
+	
+	const personList = [];
+	
+	for (let i = 0; i < count; i++) {
+		personList.push({ id: i, ...person() })
+	}
+	
+	return personList;
+}
 
 function bytesToSize(bytes) {
 	if (bytes === 0) return 'n/a'
@@ -19,7 +39,7 @@ function commandList(command) {
 		"help" : "commands list",
 		"author" : "Kirill Bukovski",
 		"version" : "v1.0.0",
-		"fill" : "fill db data",
+		"fill" : util.format("%O", randomPersonList(5)),
 		"info" : util.format("%O", {
 			"Platform": process.platform,
 			"Architecture": process.arch,
