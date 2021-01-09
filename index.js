@@ -4,6 +4,51 @@ const os = require('os');
 const util = require('util');
 
 
+
+/****************************/
+
+
+let textColorSetting = "\x1b[0m";
+// settings --color="cyan"
+function textColor(color) {
+	const colors =  {
+		reset: "\x1b[0m",
+		black: "\x1b[30m",
+		red: "\x1b[31m",
+		green: "\x1b[32m",
+		yellow: "\x1b[33m",
+		blue: "\x1b[34m",
+		magenta: "\x1b[35m",
+		cyan: "\x1b[36m",
+		white: "\x1b[37m",
+		crimson: "\x1b[38m"
+	}
+	
+	if (colors[ color ]) {
+		return textColorSetting = colors[ color ]
+	}
+	
+	return textColorSetting;
+}
+
+
+let textFontSetting = "\033[22m";
+// settings --font="bold"
+function textFont(font) {
+	const fonts =  {
+		bold : '\033[1m',
+		italic : '\033[3m',
+		underline : '\033[4m',
+		normal : '\033[22m'
+	}
+	
+	if (fonts[ font ]) {
+		return textFontSetting = fonts[ font ]
+	}
+	
+	return textFontSetting;
+}
+
 /****************************/
 
 function randomPersonList(count) {
@@ -55,10 +100,24 @@ function commandList(command) {
 	
 	if (commandsList[ commandString ]) {
 		return commandsList[ commandString ];
+	} else if (commandString.includes("settings --color=")) {
+		const colorText = commandString.replace(/settings --color="(.*)"/g, "$1")
+			.trim().toLowerCase();
+		
+		textColor(colorText);
+		
+		return `Text color has been changed to ${ colorText.toUpperCase() }`;
+	} else if (commandString.includes("settings --font=")) {
+		const fontText = commandString.replace(/settings --font="(.*)"/g, "$1")
+			.trim().toLowerCase();
+		
+		textFont(fontText);
+		
+		return `Text font has been changed to ${ fontText.toUpperCase() }`;
 	}	else if (commandString === "exit") {
 		return process.exit(1)
 	} else {
-		return "Command not found, use 'help' to select command from list"
+		return "Команда не найдена, используйте 'help' для выбора команды из списка"
 	}
 }
 
@@ -68,8 +127,7 @@ function commandList(command) {
 
 function terminalQuestion() {
 	function ask(text) {
-		process.stdout.write(`\n ${ text }` );
-		process.stdout.write(`\n > `);
+		process.stdout.write(`\n ${ textFontSetting } ${ textColorSetting } ${ text } \x1b[0m` );		process.stdout.write(`\n > `);
 	}
 	
 	process.stdin.on('data', function (data) {

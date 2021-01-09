@@ -1,7 +1,7 @@
 {
   "name": "node-termenal-process",
   "version": "1.0.0",
-  "description": "student project for practicing working with the terminal through the process and issuing commands in the terminal with information output to the command line",
+  "description": "NodeJs project for practicing working with the terminal. Use process and issuing commands in the terminal with information output to the command line",
   "main": "index.js",
   "private": false,
   "homepage": "https://github.com/Bukovski/node-termenal-process",
