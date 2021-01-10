@@ -178,6 +178,21 @@ function bytesToSize(bytes) {
 
 /****************************/
 
+function writeAskTemplate(text) {
+	process.stdout.write(`\n ${ textFontSetting } ${ textColorSetting } ${ text } \x1b[0m` );
+	process.stdout.write(`\n > `);
+}
+
+function writeTemplateHeader(commandString) {
+	process.stdout.write(horizontalLine());
+	process.stdout.write(
+		centeredText(
+			"\033[1m \x1b[32m " + letterSpaceSeparator( commandString.toUpperCase() , 1) + " \x1b[0m"
+		)
+	);
+	process.stdout.write(horizontalLine());
+}
+
 function commandList(command) {
 	const commandsList = {
 		"help" : "commands list",
@@ -194,19 +209,14 @@ function commandList(command) {
 	}
 	
 	const commandString = command.toString().trim();
+	const regexSettings = new RegExp(/settings --(font|color)+="(.*)"/g);
 	
-	process.stdout.write(horizontalLine());
-	process.stdout.write(
-		centeredText(
-			"\033[1m \x1b[32m " + letterSpaceSeparator( commandString.toUpperCase() , 1) + " \x1b[0m"
-		)
-	);
-	process.stdout.write(horizontalLine());
+	writeTemplateHeader(commandString);
 	
 	if (commandsList[ commandString ]) {
 		return commandsList[ commandString ];
-	} else if (/settings --(font|color)+="(.*)"/g.test(commandString)) {
-		const textSettingName = commandString.replace(/settings --(font|color)+="(.*)"/g, "$1,$2").toLowerCase();
+	} else if (regexSettings.test(commandString)) {
+		const textSettingName = commandString.replace(regexSettings, "$1,$2").toLowerCase();
 		const splitTextSettings = textSettingName.split(",");
 		const [ category, setting ] = splitTextSettings;
 		
@@ -214,7 +224,10 @@ function commandList(command) {
 	}	else if (commandString.includes("settings")) {
 		return "use one of available commands 'settings --color=' or 'settings --font='"
 	}	else if (commandString === "exit") {
-		return process.exit(1)
+		// return process.exit(1)
+		process.on('exit', function () {
+			process.stdout.write("Goodbye, terminal is not available");
+		});
 	} else {
 		return "Command not found, use 'help' to select command from list"
 	}
@@ -224,18 +237,13 @@ function commandList(command) {
 /****************************/
 
 
-function terminalQuestion() {
-	function ask(text) {
-		process.stdout.write(`\n ${ textFontSetting } ${ textColorSetting } ${ text } \x1b[0m` );
-		process.stdout.write(`\n > `);
-	}
-	
+function runTerminalQuestion() {
 	process.stdin.on('data', function (data) {
-		ask(commandList(data));
+		writeAskTemplate(commandList(data));
 	});
 	
-	ask("Enter the command or use the command 'help'");
+	writeAskTemplate("Enter the command or use the command 'help'");
 }
 
-terminalQuestion();
+runTerminalQuestion();
 
