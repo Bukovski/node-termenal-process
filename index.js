@@ -4,13 +4,105 @@ const os = require('os');
 const util = require('util');
 
 
-
 /****************************/
 
+const letterSpaceSeparator = (str, lines) => { //separates each character in a line with spaces
+	str = (typeof(str) === 'string' && str.trim().length) ? str.trim() : '';
+	lines = (typeof(lines) === 'number' && lines > 0) ? lines : 1;
+	
+	const splitText = str.split('')
+	let textLine = ''
+	
+	
+	for (let textIndex = 0, splitLength = splitText.length; textIndex < splitLength; textIndex++) {
+		for (let index = 0; index < lines; index++) {
+			textLine += ' ';
+		}
+		
+		textLine += splitText[ textIndex ]
+	}
+	
+	return textLine;
+};
+
+/*
+	decorates the data object as a two-column form
+	
+	id       : 4
+  name     : Tim Price
+  email    : Ayden.Bernier62@yahoo.com
+  text     : quod
+ */
+const formObjectSpace = (obj) => {
+	let textLine = "";
+	
+	const sortKeysLength = Object.keys(obj)
+		.sort((a, b) => b.length - a.length)
+	const maxLengthKeys = sortKeysLength[ 0 ].length + 15;
+	
+	for (let key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			const value = obj[ key ];
+			let line = '\n \x1b[33m ' + key + ' \x1b[0m';
+			const padding = maxLengthKeys - line.length;
+			
+			for (let i = 0; i < padding; i++) {
+				line += ' ';
+			}
+			
+			line += ' : ' + value + "\n";
+			textLine += line;
+		}
+		
+	}
+	
+	return textLine
+}
+
+const formArraySpace = (arr) => { // the same as the formObjectSpace function only for an array of objects (collection)
+	let textLine = "";
+	
+	arr.forEach(obj => {
+		textLine += formObjectSpace(obj) + horizontalLine()
+	})
+	
+	return textLine
+}
+
+const horizontalLine = () => { // fill the string with dashes from start to finish line
+	const width = process.stdout.columns; // Get the available screen size
+	let line = '';
+	
+	for (let i = 0; i < width; i++) {
+		line += '-';
+	}
+	
+	return line + '\n';
+};
+
+const centeredText = (str) => { //put the text on center
+	str = (typeof(str) === 'string' && str.trim().length) ? str.trim() : '';
+	
+	let line = '';
+	const width = process.stdout.columns; // Get the available screen size
+	const leftPadding = Math.floor((width - str.length) / 2); // Calculate the left padding there should be
+	
+	for (let i = 0; i < leftPadding; i++) {
+		line += ' ';
+	}
+	
+	line += str + '\n';
+	
+	return line;
+};
+
+/****************************/
 
 let textColorSetting = "\x1b[0m";
 // settings --color="cyan"
 function textColor(color) {
+	color = (typeof(color) === 'string' && color.trim().length) ? color.trim() : '';
+	
 	const colors =  {
 		reset: "\x1b[0m",
 		black: "\x1b[30m",
@@ -35,6 +127,8 @@ function textColor(color) {
 let textFontSetting = "\033[22m";
 // settings --font="bold"
 function textFont(font) {
+	font = (typeof(font) === 'string' && font.trim().length) ? font.trim() : '';
+	
 	const fonts =  {
 		bold : '\033[1m',
 		italic : '\033[3m',
@@ -52,6 +146,8 @@ function textFont(font) {
 /****************************/
 
 function randomPersonList(count) {
+	count = (typeof(count) === 'number' && count > 0) ? count : 1;
+	
 	const person = () => ({
 		name: faker.name.findName(),
 		email: faker.internet.email(),
@@ -84,8 +180,9 @@ function commandList(command) {
 		"help" : "commands list",
 		"author" : "Kirill Bukovski",
 		"version" : "v1.0.0",
-		"fill" : util.format("%O", randomPersonList(5)),
-		"info" : util.format("%O", {
+		// "fill" : util.format("%O", randomPersonList(5)),
+		"fill" : formArraySpace(randomPersonList(5)),
+		"info" : formObjectSpace({
 			"Platform": process.platform,
 			"Architecture": process.arch,
 			"CPU": os.cpus()[ 0 ].model,
@@ -96,7 +193,13 @@ function commandList(command) {
 	
 	const commandString = command.toString().trim();
 	
-	process.stdout.write(commandString.toUpperCase());
+	process.stdout.write(horizontalLine());
+	process.stdout.write(
+		centeredText(
+			"\033[1m \x1b[32m " + letterSpaceSeparator( commandString.toUpperCase() , 1) + " \x1b[0m"
+		)
+	);
+	process.stdout.write(horizontalLine());
 	
 	if (commandsList[ commandString ]) {
 		return commandsList[ commandString ];
@@ -127,14 +230,15 @@ function commandList(command) {
 
 function terminalQuestion() {
 	function ask(text) {
-		process.stdout.write(`\n ${ textFontSetting } ${ textColorSetting } ${ text } \x1b[0m` );		process.stdout.write(`\n > `);
+		process.stdout.write(`\n ${ textFontSetting } ${ textColorSetting } ${ text } \x1b[0m` );
+		process.stdout.write(`\n > `);
 	}
 	
 	process.stdin.on('data', function (data) {
 		ask(commandList(data));
 	});
 	
-	ask("Enter the command or use the command 'help'");
+	ask("Введите команду или воспользуйтесь командой 'help'");
 }
 
 terminalQuestion();
