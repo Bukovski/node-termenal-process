@@ -119,7 +119,7 @@ function textColor(color) {
 		return textColorSetting = colors[ color ]
 	}
 	
-	return textColorSetting;
+	return Object.keys(colors).join(", ");
 }
 
 
@@ -139,7 +139,7 @@ function textFont(font) {
 		return textFontSetting = fonts[ font ]
 	}
 	
-	return textFontSetting;
+	return Object.keys(fonts).join(", ");
 }
 
 /****************************/
@@ -205,16 +205,22 @@ function commandList(command) {
 		const colorText = commandString.replace(/settings --color="(.*)"/g, "$1")
 			.trim().toLowerCase();
 		
-		textColor(colorText);
+		const colorList = textColor(colorText);
+		
+		if (colorList.length > 15) return `Select value from the list available: ${ colorList }`;
 		
 		return `Text color has been changed to ${ colorText.toUpperCase() }`;
 	} else if (commandString.includes("settings --font=")) {
 		const fontText = commandString.replace(/settings --font="(.*)"/g, "$1")
 			.trim().toLowerCase();
 		
-		textFont(fontText);
+		const fontList = textFont(fontText);
+		
+		if (fontList.length > 15) return `Select value from the list available: ${ fontList }`;
 		
 		return `Text font has been changed to ${ fontText.toUpperCase() }`;
+	}	else if (commandString === "settings") {
+		return "use one of available commands 'settings --color=' or 'settings --font='"
 	}	else if (commandString === "exit") {
 		return process.exit(1)
 	} else {
