@@ -1,7 +1,6 @@
 const faker = require('faker');
 
 const os = require('os');
-const util = require('util');
 
 
 /****************************/
@@ -180,7 +179,6 @@ function commandList(command) {
 		"help" : "commands list",
 		"author" : "Kirill Bukovski",
 		"version" : "v1.0.0",
-		// "fill" : util.format("%O", randomPersonList(5)),
 		"fill" : formArraySpace(randomPersonList(5)),
 		"info" : formObjectSpace({
 			"Platform": process.platform,
@@ -220,7 +218,7 @@ function commandList(command) {
 	}	else if (commandString === "exit") {
 		return process.exit(1)
 	} else {
-		return "Команда не найдена, используйте 'help' для выбора команды из списка"
+		return "Command not found, use 'help' to select command from list"
 	}
 }
 
@@ -238,7 +236,7 @@ function terminalQuestion() {
 		ask(commandList(data));
 	});
 	
-	ask("Введите команду или воспользуйтесь командой 'help'");
+	ask("Enter the command or use the command 'help'");
 }
 
 terminalQuestion();
