@@ -198,7 +198,15 @@ function writeTemplateHeader(commandString) {
 
 function commandList(command) {
 	const commandsList = {
-		"help" : "commands list",
+		"help" : formObjectSpace({
+			"help" : "The list of available commands",
+			"author" : "developer of the program",
+			"dir" : "full path to the main file",
+			"fill" : "filling an array of fake user data",
+			"info" : "technical information about the server (computer)",
+			"settings" : 'change the settings of the text design (--color="blue", --font="bold")\x1b[32m settings --color="cyan"\x1b[0m',
+			"exit" : "exit from the program"
+		}),
 		"author" : "Kirill Bukovski",
 		"version" : "v1.0.0",
 		"fill" : formArraySpace(randomPersonList(5)),
