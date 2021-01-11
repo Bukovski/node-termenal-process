@@ -135,7 +135,7 @@ function textSettings(settingCategory, fontSetting) {
 	if (!category[ fontSetting ]) {
 		const fontList = Object.keys(category).join(", ");
 		
-		return `Select value from the list available: ${ fontList }`;
+		return warningMessage(`Select value from the list available: ${ fontList }`);
 	} else if (settingCategory === "color") {
 		textColorSetting = category[ fontSetting ];
 	} else if (settingCategory === "font") {
@@ -145,6 +145,9 @@ function textSettings(settingCategory, fontSetting) {
 	return `Text ${ settingCategory } has been changed to ${ fontSetting.toUpperCase() }`;
 }
 
+function warningMessage(message) {
+	return "\033[1m \x1b[31m Warning! \x1b[0m" + message;
+}
 
 /****************************/
 
@@ -222,14 +225,14 @@ function commandList(command) {
 		
 		return textSettings(category, setting)
 	}	else if (commandString.includes("settings")) {
-		return "use one of available commands 'settings --color=' or 'settings --font='"
+		return warningMessage("use one of available commands 'settings --color=' or 'settings --font='")
 	}	else if (commandString === "exit") {
 		// return process.exit(1)
 		process.on('exit', function () {
 			process.stdout.write("Goodbye, terminal is not available");
 		});
 	} else {
-		return "Command not found, use 'help' to select command from list"
+		return warningMessage("Command not found, use 'help' to select command from list");
 	}
 }
 
